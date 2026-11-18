@@ -11,4 +11,8 @@ test("Démo : le cas passant", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Calendrier des sessions" })).toBeVisible();
     await expect(page.getByTestId("badge").first()).toBeVisible();
   });
+
+  await test.step("Je vois qui anime déjà chaque session", async () => {
+    await expect(page.getByTestId("equipe-assignee").first()).toBeVisible();
+  });
 });

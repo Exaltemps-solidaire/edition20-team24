@@ -11,8 +11,8 @@ export type Session = {
   module: string;
   date: string;
   type: TypeSession;
-  salariesAssignes: number;
-  benevolesAssignes: number;
+  salaries: string[];
+  benevoles: string[];
 };
 
 // Règle de l'association (passation/cadrage/7-prd.md) : moins d'une demi-journée →
@@ -24,7 +24,7 @@ export function effectifRequis(type: TypeSession): { salaries: number; benevoles
 export function calculerBadge(session: Session): "complete" | "incomplete" {
   const requis = effectifRequis(session.type);
   const complete =
-    session.salariesAssignes >= requis.salaries && session.benevolesAssignes >= requis.benevoles;
+    session.salaries.length >= requis.salaries && session.benevoles.length >= requis.benevoles;
   return complete ? "complete" : "incomplete";
 }
 
@@ -35,24 +35,24 @@ const sessionsEnDur: Session[] = [
     module: "Fresque de la précarité",
     date: "2026-11-24",
     type: "journee",
-    salariesAssignes: 1,
-    benevolesAssignes: 0,
+    salaries: ["Camille"],
+    benevoles: [],
   },
   {
     id: "s2",
     module: "Form'Action commerces — Le Carillon",
     date: "2026-11-25",
     type: "demi-journee",
-    salariesAssignes: 1,
-    benevolesAssignes: 1,
+    salaries: ["Nadia"],
+    benevoles: ["Hugo"],
   },
   {
     id: "s3",
     module: "Sensibilisation grand public",
     date: "2026-11-26",
     type: "journee",
-    salariesAssignes: 2,
-    benevolesAssignes: 1,
+    salaries: ["Nadia", "Camille"],
+    benevoles: ["Hugo"],
   },
 ];
 

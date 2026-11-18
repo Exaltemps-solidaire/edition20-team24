@@ -82,9 +82,33 @@ Si le temps restant venait à être prolongé, dis-le-moi : je redécoupe imméd
   - **Modifications** :
     - `frontend/src/app/layout.tsx` : titre/description remplacés (valeurs par défaut du gabarit Next.js → nom de l'application), `lang="en"` → `lang="fr"` — sert le critère du titre d'onglet.
 
+## ⚠️ Temps restant au moment de replanifier : 20 minutes (2026-11-18)
+
+20 minutes et un tour de test de 10 minutes laissent de la marge pour **une** itération courte (codage ~5-8 min + ~5 min de publication + 10 min de test), sans filet pour une seconde. Décision prise avec le développeur : reprendre la priorité 1 de « À venir » (composition de l'équipe), réduite à son plus petit incrément démontrable — **lecture seule** : afficher qui est déjà assigné, sans encore pouvoir modifier l'affectation (la sélection reste hors périmètre, reportée).
+
+**Plan de l'itération 3 validé tel quel le 2026-11-18.** Temps restant confirmé au début de l'itération 3 : ~20 minutes.
+
+## Itération 3 : la coordinatrice voit qui anime déjà chaque session
+
+- **Dans le périmètre** :
+  - la route `GET /api/v1/sessions` renvoie, pour chaque session, les noms des salarié·es et bénévoles déjà assigné·es (données fictives, en dur) au lieu de simples compteurs ;
+  - le badge se calcule désormais à partir du nombre de noms assignés (même règle que l'itération 1, aucun changement de règle métier) ;
+  - l'écran « Calendrier des sessions » affiche, sous le badge de chaque session, la liste des personnes déjà assignées (lecture seule).
+- **Hors périmètre** : sélectionner ou modifier qui est assigné (formulaire, action) ; l'appel aux bénévoles manquants ; tout le reste de « À venir ». Reporté à une itération suivante.
+- **Critères d'acceptation** (3 au plus) :
+  - Étant donné une session avec des personnes assignées, quand on ouvre le calendrier, alors leurs noms s'affichent sous le badge de cette session.
+  - Étant donné une session sans bénévole assigné, quand on calcule son badge, alors il reste « incomplète » (même règle qu'avant, vérifiée par test).
+  - Étant donné le build, quand on relance `npm test` et `./scripts/verifier-deployabilite.sh`, alors les deux passent sans régression.
+- **Hypothèse de l'équipe couverte** : « Nous croyons que voir qui anime déjà une session aide à repérer vite ce qui manque » — partiellement : affichage seul, pas encore d'action de sélection.
+- **Codage estimé** : 7 minutes.
+- **Fichiers prévus** : `api/src/routes.ts`, `api/src/routes.test.ts`, `frontend/src/app/page.tsx`.
+- **Tests unitaires prévus** : 1 à 3, mise à jour de `calculerBadge`/`effectifRequis` pour des listes de noms au lieu de compteurs, cas complet/incomplet inchangés.
+- **Étapes ajoutées à la démo** : vérifier que les noms assignés apparaissent sous au moins une session.
+- **Bilan** : _à remplir en fin d'itération (durée de codage réelle, dépassement éventuel, fait, reporté, modifications fichier par fichier)._
+
 ## À venir (ordre de priorité, à détailler au fil de l'eau)
 
-1. Composition de l'équipe : afficher qui anime déjà ce jour-là et permettre de sélectionner les salarié·es disponibles pour une session ; le badge se met à jour dès que l'équipe est complète.
+1. Sélection de l'équipe : permettre de choisir/modifier les salarié·es et bénévoles assigné·es à une session (au-delà de l'affichage posé en itération 3).
 2. Appel aux bénévoles : si aucun·e bénévole n'est disponible, déclencher l'envoi d'un mail avec un lien de réponse (équivalent Fillout) ; la réponse met à jour le badge.
 3. Écran « Qui êtes-vous ? » : choix du persona (responsable d'antenne, coordinatrice, salarié·e, bénévole, commerçant·e) au démarrage, sans connexion ni mot de passe, avec un bouton pour en changer.
 4. Tableau de bord responsable d'antenne : vue de toutes les sessions avec leurs badges, sans ouvrir les fiches ; alerte listant les sessions encore incomplètes à J-7.
