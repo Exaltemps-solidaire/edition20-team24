@@ -42,21 +42,26 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <h1>Calendrier des sessions</h1>
+        <h1 className={styles.titre}>Calendrier des sessions</h1>
         {etat.statut === "chargement" && <p>Chargement des sessions…</p>}
         {etat.statut === "erreur" && (
           <p>Impossible de charger les sessions pour le moment.</p>
         )}
         {etat.statut === "pret" && (
-          <ul>
+          <ul className={styles.liste}>
             {etat.sessions.map((session) => (
-              <li key={session.id}>
+              <li key={session.id} className={styles.session}>
                 <strong>{session.module}</strong> — {session.date} (
-                {session.type === "journee" ? "journée entière" : "demi-journée"}) —{" "}
-                <span data-testid="badge">
+                {session.type === "journee" ? "journée entière" : "demi-journée"})
+                <span
+                  data-testid="badge"
+                  className={`${styles.badge} ${
+                    session.badge === "complete" ? styles.badgeComplete : styles.badgeIncomplete
+                  }`}
+                >
                   {session.badge === "complete" ? "équipe complète" : "équipe incomplète"}
                 </span>
-                <div data-testid="equipe-assignee">
+                <div data-testid="equipe-assignee" className={styles.equipe}>
                   Salarié·es : {session.salaries.length > 0 ? session.salaries.join(", ") : "aucun·e"}
                   {" — "}
                   Bénévoles : {session.benevoles.length > 0 ? session.benevoles.join(", ") : "aucun·e"}
