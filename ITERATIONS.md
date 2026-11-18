@@ -115,6 +115,19 @@ Si le temps restant venait à être prolongé, dis-le-moi : je redécoupe imméd
     - `frontend/src/app/page.tsx` : affichage en lecture seule des salarié·es/bénévoles assigné·es sous chaque badge (`data-testid="equipe-assignee"`) — critère 1.
     - `e2e/demo.spec.ts` : étape « Je vois qui anime déjà chaque session » ajoutée à la démo.
 
+## ✂️ Fin du build : stabilisation plutôt qu'une 4ᵉ itération
+
+À 10 minutes de la fin du build, le minimum incompressible d'une itération complète (codage + ~5 min de publication + 10 min de tour de test) ne tient plus. Décision prise avec le développeur : pas de nouvelle fonctionnalité, ces dernières minutes servent à stabiliser ce qui sera montré au pitch.
+
+Vérifications finales (2026-11-18, ~15h54) :
+- `podman ps` : `team24_frontend_1` et `team24_api_1` up ;
+- `localhost:8080/health`, `localhost:8080/sante`, `localhost:8081/health`, `localhost:8081/sante` : 200 ;
+- `npm test` : 5 tests passent, aucune régression ;
+- `./scripts/verifier-deployabilite.sh` : aucune borne ;
+- correctif livré en cours de route (hors numérotation d'itération) : la CSP du front ne déclarait pas de `script-src`, ce qui bloquait les scripts inline d'hydratation de Next.js et figeait la page sur « Chargement des sessions… » — corrigé (`frontend/nginx.conf`), redéployé, revérifié.
+
+Dernière version signalée à PM Lab : **3**, re-signalée après le correctif CSP pour refléter le build final.
+
 ## À venir (ordre de priorité, à détailler au fil de l'eau)
 
 1. Sélection de l'équipe : permettre de choisir/modifier les salarié·es et bénévoles assigné·es à une session (au-delà de l'affichage posé en itération 3).
