@@ -8,8 +8,6 @@ type Session = {
   module: string;
   date: string;
   type: "demi-journee" | "journee";
-  salaries: string[];
-  benevoles: string[];
   badge: "complete" | "incomplete";
 };
 
@@ -61,11 +59,6 @@ export default function Home() {
                 >
                   {session.badge === "complete" ? "équipe complète" : "équipe incomplète"}
                 </span>
-                <div data-testid="equipe-assignee" className={styles.equipe}>
-                  Salarié·es : {session.salaries.length > 0 ? session.salaries.join(", ") : "aucun·e"}
-                  {" — "}
-                  Bénévoles : {session.benevoles.length > 0 ? session.benevoles.join(", ") : "aucun·e"}
-                </div>
               </li>
             ))}
           </ul>
