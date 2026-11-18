@@ -53,9 +53,39 @@ Si le temps restant venait à être prolongé, dis-le-moi : je redécoupe imméd
     - `podman-compose.yml` : écrit pour le déploiement (réseau `core-network`, ports 8080/8081) — recette de déploiement du serveur.
     - `e2e/demo.spec.ts` : étape « Je vois le calendrier des sessions avec leur badge » ajoutée à la démo.
 
+## Itération 2 : assigner une personne à une session
+
+**Plan validé le 2026-11-18**, avec un périmètre réduit par rapport à l'item 1 de « À venir » (qui incluait aussi « afficher qui anime déjà ce jour-là », trop gros pour le temps restant).
+
+- **Temps restant annoncé au début de l'itération** : 10 minutes seulement. ✂️ Ce temps ne permettait pas une itération complète (codage + publication + tour de test) ; le développeur a choisi de tenter quand même l'itération plutôt que de s'arrêter sur de la stabilisation. **Conséquence** : cette version n'a pas eu de tour de test complet de l'équipe avant signalement.
+- **Objectif** : depuis le calendrier, la coordinatrice peut assigner un·e salarié·e ou un·e bénévole à une session, et le badge se met à jour.
+- **Dans le périmètre** :
+  - `POST /api/v1/sessions/:id/assigner` (corps `{ "type": "salarie" | "benevole" }`), incrémente le bon compteur de la session en dur et renvoie la session à jour avec son badge ;
+  - deux boutons (« + salarié·e », « + bénévole ») sur chaque session affichée comme incomplète, qui rechargent la liste après l'appel.
+- **Hors périmètre** : qui anime déjà ce jour-là (vue croisée), sélection nominative d'une personne précise, appel aux bénévoles par mail.
+- **Critères d'acceptation** :
+  - Sur une session incomplète, cliquer « + salarié·e » ou « + bénévole » incrémente le bon effectif et le badge passe à « équipe complète » si l'effectif requis est atteint.
+  - `POST /api/v1/sessions/:id/assigner` renvoie 200 avec la session à jour sur un id connu, 404 sur un id inconnu, 400 sur un type invalide.
+  - Un test unitaire couvre le passage incomplète → effectif incrémenté via la route.
+- **Hypothèse de l'équipe couverte** : « le tableau de bord centralisant sessions et disponibilités permet à la coordinatrice de terrain de constituer une équipe sans échange manuel » — partiellement : l'assignation existe, mais sans distinguer les personnes ni leurs disponibilités réelles (données en dur toujours).
+- **Codage estimé** : 10 minutes (budget serré, vu le temps restant).
+- **Fichiers touchés** : `api/src/routes.ts`, `api/src/server.ts` (lecture du corps JSON, nécessaire pour le POST), `api/src/routes.test.ts`, `frontend/src/app/page.tsx`.
+- **Tests unitaires prévus** : 2, sur la route d'assignation (passage à complète, 400/404).
+- **Bilan** :
+  - Durée de codage réelle : 1 minute (budget de 10 minutes largement respecté, pas de dépassement).
+  - Critères d'acceptation : les trois satisfaits (boutons + mise à jour du badge en local, route testée 200/400/404, 2 tests ajoutés — 7 tests au total, tous passent).
+  - Rien de reporté par rapport au périmètre réduit de cette itération ; le reste de l'item 1 original (« qui anime déjà ce jour-là ») reste en tête de « À venir ».
+  - Le harnais n'a rien bloqué : `npm test` passe (7 tests), `./scripts/verifier-deployabilite.sh` ne signale aucune borne.
+  - ⚠️ Pas de tour de test de l'équipe avant ce signalement, faute de temps restant suffisant (décision du développeur, voir plus haut) — à surveiller aux retours PM Lab.
+  - **Modifications** :
+    - `api/src/routes.ts` : ajout de `assignerPersonne` et de la route `POST /api/v1/sessions/:id/assigner` — sert les critères 1 et 2.
+    - `api/src/server.ts` : lecture et parsing JSON du corps de requête, transmis au routeur — nécessaire au critère 2.
+    - `api/src/routes.test.ts` : 2 tests sur la route d'assignation (passage à complète, 400 type invalide, 404 id inconnu) — critère 3.
+    - `frontend/src/app/page.tsx` : boutons « + salarié·e » / « + bénévole » sur les sessions incomplètes, rechargement de la liste après assignation — critère 1.
+
 ## À venir (ordre de priorité, à détailler au fil de l'eau)
 
-1. Composition de l'équipe : afficher qui anime déjà ce jour-là et permettre de sélectionner les salarié·es disponibles pour une session ; le badge se met à jour dès que l'équipe est complète.
+1. Qui anime déjà ce jour-là : vue croisée des sessions du même jour, pour éviter de sur-assigner une même personne.
 2. Appel aux bénévoles : si aucun·e bénévole n'est disponible, déclencher l'envoi d'un mail avec un lien de réponse (équivalent Fillout) ; la réponse met à jour le badge.
 3. Écran « Qui êtes-vous ? » : choix du persona (responsable d'antenne, coordinatrice, salarié·e, bénévole, commerçant·e) au démarrage, sans connexion ni mot de passe, avec un bouton pour en changer.
 4. Tableau de bord responsable d'antenne : vue de toutes les sessions avec leurs badges, sans ouvrir les fiches ; alerte listant les sessions encore incomplètes à J-7.

@@ -19,6 +19,26 @@ describe("router", () => {
     expect(sessions.length).toBeGreaterThan(0);
     expect(sessions.every((s) => s.badge === "complete" || s.badge === "incomplete")).toBe(true);
   });
+
+  it("assigner une personne fait passer une session d'incomplète à complète", () => {
+    const avant = router("GET", "/api/v1/sessions");
+    const { sessions } = avant.corps as { sessions: Array<{ id: string; badge: string }> };
+    const incomplete = sessions.find((s) => s.badge === "incomplete")!;
+
+    const reponse = router("POST", `/api/v1/sessions/${incomplete.id}/assigner`, {
+      type: "salarie",
+    });
+    expect(reponse.statut).toBe(200);
+    const { session } = reponse.corps as { session: { salariesAssignes: number } };
+    expect(session.salariesAssignes).toBeGreaterThan(0);
+  });
+
+  it("répond 400 sur un type d'assignation inconnu, 404 sur une session inconnue", () => {
+    expect(router("POST", "/api/v1/sessions/s1/assigner", { type: "autre" }).statut).toBe(400);
+    expect(router("POST", "/api/v1/sessions/inconnue/assigner", { type: "salarie" }).statut).toBe(
+      404,
+    );
+  });
 });
 
 describe("calculerBadge", () => {

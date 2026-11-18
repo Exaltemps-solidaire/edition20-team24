@@ -28,6 +28,14 @@ export function calculerBadge(session: Session): "complete" | "incomplete" {
   return complete ? "complete" : "incomplete";
 }
 
+export type TypePersonne = "salarie" | "benevole";
+
+export function assignerPersonne(session: Session, type: TypePersonne): Session {
+  return type === "salarie"
+    ? { ...session, salariesAssignes: session.salariesAssignes + 1 }
+    : { ...session, benevolesAssignes: session.benevolesAssignes + 1 };
+}
+
 // Données en dur pour l'itération 1 : fictives, aucun nom ni contact réel.
 const sessionsEnDur: Session[] = [
   {
@@ -56,7 +64,7 @@ const sessionsEnDur: Session[] = [
   },
 ];
 
-export function router(methode: string, url: string): Reponse {
+export function router(methode: string, url: string, corpsRequete?: unknown): Reponse {
   const chemin = new URL(url, "http://api").pathname;
   if (methode === "GET" && (chemin === "/health" || chemin === "/sante")) {
     return { statut: 200, corps: { status: "ok" } };
@@ -64,6 +72,20 @@ export function router(methode: string, url: string): Reponse {
   if (methode === "GET" && chemin === "/api/v1/sessions") {
     const sessions = sessionsEnDur.map((session) => ({ ...session, badge: calculerBadge(session) }));
     return { statut: 200, corps: { sessions } };
+  }
+  const correspondanceAssignation = chemin.match(/^\/api\/v1\/sessions\/([^/]+)\/assigner$/);
+  if (methode === "POST" && correspondanceAssignation) {
+    const type = (corpsRequete as { type?: string } | undefined)?.type;
+    if (type !== "salarie" && type !== "benevole") {
+      return { statut: 400, corps: { erreur: "type attendu : salarie ou benevole" } };
+    }
+    const index = sessionsEnDur.findIndex((s) => s.id === correspondanceAssignation[1]);
+    if (index === -1) return { statut: 404 };
+    sessionsEnDur[index] = assignerPersonne(sessionsEnDur[index], type);
+    return {
+      statut: 200,
+      corps: { session: { ...sessionsEnDur[index], badge: calculerBadge(sessionsEnDur[index]) } },
+    };
   }
   return { statut: 404 };
 }

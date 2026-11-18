@@ -19,23 +19,31 @@ type EtatSessions =
 export default function Home() {
   const [etat, setEtat] = useState<EtatSessions>({ statut: "chargement" });
 
-  useEffect(() => {
-    let annule = false;
+  const chargerSessions = () => {
     fetch("/api/v1/sessions")
       .then((reponse) => {
         if (!reponse.ok) throw new Error(`statut ${reponse.status}`);
         return reponse.json();
       })
       .then((donnees: { sessions: Session[] }) => {
-        if (!annule) setEtat({ statut: "pret", sessions: donnees.sessions });
+        setEtat({ statut: "pret", sessions: donnees.sessions });
       })
       .catch(() => {
-        if (!annule) setEtat({ statut: "erreur" });
+        setEtat({ statut: "erreur" });
       });
-    return () => {
-      annule = true;
-    };
+  };
+
+  useEffect(() => {
+    chargerSessions();
   }, []);
+
+  const assigner = (sessionId: string, type: "salarie" | "benevole") => {
+    fetch(`/api/v1/sessions/${sessionId}/assigner`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type }),
+    }).then(() => chargerSessions());
+  };
 
   return (
     <div className={styles.page}>
@@ -54,6 +62,13 @@ export default function Home() {
                 <span data-testid="badge">
                   {session.badge === "complete" ? "équipe complète" : "équipe incomplète"}
                 </span>
+                {session.badge === "incomplete" && (
+                  <>
+                    {" "}
+                    <button onClick={() => assigner(session.id, "salarie")}>+ salarié·e</button>{" "}
+                    <button onClick={() => assigner(session.id, "benevole")}>+ bénévole</button>
+                  </>
+                )}
               </li>
             ))}
           </ul>
