@@ -19,8 +19,11 @@ type EtatSessions =
 export default function Home() {
   const [etat, setEtat] = useState<EtatSessions>({ statut: "chargement" });
 
+  const DELAI_MAX_MS = 6000;
+
   const chargerSessions = () => {
-    fetch("/api/v1/sessions")
+    const minuteur = AbortSignal.timeout(DELAI_MAX_MS);
+    fetch("/api/v1/sessions", { signal: minuteur })
       .then((reponse) => {
         if (!reponse.ok) throw new Error(`statut ${reponse.status}`);
         return reponse.json();
@@ -51,7 +54,17 @@ export default function Home() {
         <h1>Calendrier des sessions</h1>
         {etat.statut === "chargement" && <p>Chargement des sessions…</p>}
         {etat.statut === "erreur" && (
-          <p>Impossible de charger les sessions pour le moment.</p>
+          <p>
+            Impossible de charger les sessions pour le moment.{" "}
+            <button
+              onClick={() => {
+                setEtat({ statut: "chargement" });
+                chargerSessions();
+              }}
+            >
+              Réessayer
+            </button>
+          </p>
         )}
         {etat.statut === "pret" && (
           <ul>

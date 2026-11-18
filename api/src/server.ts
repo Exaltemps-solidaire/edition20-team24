@@ -6,6 +6,7 @@ import { router } from "./routes.ts";
 const port = Number(process.env.PORT ?? 8081);
 
 const serveur = createServer((req, res) => {
+  console.log(`api : ${req.method} ${req.url}`);
   const morceaux: Uint8Array[] = [];
   req.on("data", (morceau) => morceaux.push(morceau));
   req.on("end", () => {
