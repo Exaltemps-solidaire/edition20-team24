@@ -37,7 +37,21 @@ Si le temps restant venait à être prolongé, dis-le-moi : je redécoupe imméd
   - `podman-compose.yml` si nécessaire côté dépôt (sinon géré uniquement côté serveur)
 - **Tests unitaires prévus** : 1 à 3, sur la fonction de calcul du badge (règle 1 salarié·e + 1 bénévole / 2 salarié·es + 1 bénévole selon la durée, et les cas complet/incomplet) — pas de test sur le balisage de l'écran.
 - **Étapes ajoutées à la démo** (`e2e/demo.spec.ts`) : ouvrir l'application, vérifier que la liste des sessions avec badges s'affiche.
-- **Bilan** : _à remplir en fin d'itération (durée de codage réelle, dépassement éventuel, fait, reporté, modifications fichier par fichier)._
+- **Bilan** :
+  - Durée de codage réelle : 2 minutes (budget de 10 minutes respecté, pas de dépassement).
+  - Critères d'acceptation : les trois satisfaits (liste affichée avec badges, règle d'équipe testée, `/health` et `/sante` répondent 200 en local sur 8080/8081 — à confirmer par le développeur sur `$URL_PUBLIQUE`).
+  - Rien de reporté par rapport au périmètre de cette itération.
+  - Le harnais n'a rien bloqué : `npm test` passe (5 tests), `./scripts/verifier-deployabilite.sh` ne signale aucune borne ni alarme, `signaler-version.sh 1` a été accepté (`moteur_avance: false` — la squad voit et teste la version, sans faire avancer le parcours PM Lab).
+  - ⚠️ Limite constatée en local : le routage `/api/*` vers le port 8081 est fait par la passerelle publique (apisix), injoignable depuis la VM. En local, `curl localhost:8080/api/v1/sessions` ne répond pas (seul `curl localhost:8081/api/v1/sessions` fonctionne) ; la démo Playwright jouée en local sur `localhost:8080` échoue donc sur l'étape du badge (fetch relatif qui ne trouve pas l'API sur ce port), alors que `GET /api/v1/sessions` fonctionne bien en direct sur 8081. Ce n'est pas un bug du code : ça ne peut être vérifié de bout en bout que via `$URL_PUBLIQUE`, par le développeur dans son navigateur.
+  - **Modifications** :
+    - `api/src/routes.ts` : ajout de `calculerBadge`, `effectifRequis`, des sessions en dur et de la route `GET /api/v1/sessions` — sert les 3 critères.
+    - `api/src/routes.test.ts` : 3 tests sur `calculerBadge` et la route `/api/v1/sessions` — critère 2 (règle d'équipe).
+    - `frontend/src/app/page.tsx` : écran « Calendrier des sessions », fetch relatif `/api/v1/sessions`, affichage badge — critère 1.
+    - `frontend/nginx.conf` : en-têtes de sécurité repris du gabarit de la plateforme (CSP réduite à `connect-src 'self'`) — contrat de déployabilité / sécurité.
+    - `api/Dockerfile`, `frontend/Dockerfile` : images de base qualifiées en `docker.io/library/...` — recette de déploiement du serveur.
+    - `.env.example`, `DEPLOIEMENT.md` : posés à la racine — contrat de déployabilité (règles 2 et 8).
+    - `podman-compose.yml` : écrit pour le déploiement (réseau `core-network`, ports 8080/8081) — recette de déploiement du serveur.
+    - `e2e/demo.spec.ts` : étape « Je vois le calendrier des sessions avec leur badge » ajoutée à la démo.
 
 ## À venir (ordre de priorité, à détailler au fil de l'eau)
 
