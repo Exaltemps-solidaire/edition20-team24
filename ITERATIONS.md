@@ -6,6 +6,8 @@
 - **Temps restant annoncé** : 30 minutes, à 2026-11-18 (heure de la question).
 - **Durée du tour de test de l'équipe dans PM Lab** : 10 minutes.
 - **Temps restant au début de l'itération 1** : ~25-30 minutes, à 2026-11-18.
+- **Temps restant annoncé pour la replanification (itération 2)** : 15 minutes, à 2026-11-18. Tour de test toujours estimé à 10 minutes.
+- **Plan de l'itération 2 validé tel quel le 2026-11-18.** Temps restant confirmé au début de l'itération 2 : ~15 minutes.
 - **Hors périmètre du programme** (voir `passation/cadrage/7-prd.md`, section « Hors périmètre ») : gestion des obligations Qualiopi, comptes bénévoles dans Softr, suivi financier, gestion des contenus pédagogiques, autres antennes, connexion/mot de passe.
 
 ## ✂️ Le temps ne permet qu'une seule itération
@@ -52,6 +54,27 @@ Si le temps restant venait à être prolongé, dis-le-moi : je redécoupe imméd
     - `.env.example`, `DEPLOIEMENT.md` : posés à la racine — contrat de déployabilité (règles 2 et 8).
     - `podman-compose.yml` : écrit pour le déploiement (réseau `core-network`, ports 8080/8081) — recette de déploiement du serveur.
     - `e2e/demo.spec.ts` : étape « Je vois le calendrier des sessions avec leur badge » ajoutée à la démo.
+
+## ⚠️ Temps restant au moment de replanifier : 15 minutes (2026-11-18)
+
+15 minutes restantes et un tour de test de 10 minutes ne laissent plus de marge pour une fonctionnalité nouvelle : codage + ~5 min de publication + 10 min de test atteignent déjà 15 minutes sans filet. Décision prise avec le développeur : **l'itération 2 n'ajoute rien au périmètre métier**, elle stabilise ce qui est déjà en ligne pour le pitch. « Composition de l'équipe », initialement en tête de « À venir », est donc reportée sans être entamée — ⚠️ à confirmer par les cadreurs si le temps du build venait à être prolongé après cette itération.
+
+## Itération 2 : l'écran montré au pitch est propre, sans régression
+
+- **Dans le périmètre** :
+  - le titre et la description de la page (actuellement les valeurs par défaut « Create Next App » du gabarit Next.js, jamais changées depuis l'itération 1) deviennent ceux de l'application (« Calendrier des sessions — La Cloche ») ;
+  - relecture rapide du rendu (écran chargement/erreur/liste) et de `./scripts/verifier-deployabilite.sh` pour confirmer l'absence de nouvelle borne avant le dernier signal.
+- **Hors périmètre** : toute fonctionnalité de la liste « À venir » (composition d'équipe en premier) — aucune n'est entamée dans cette itération.
+- **Critères d'acceptation** (3 au plus) :
+  - Étant donné l'application déployée, quand on regarde l'onglet du navigateur, alors le titre affiche le nom de l'application et non « Create Next App ».
+  - Étant donné l'API momentanément indisponible, quand l'écran se charge, alors un message d'erreur lisible s'affiche (pas d'écran blanc, pas de crash).
+  - Étant donné le build final, quand on relance `./scripts/verifier-deployabilite.sh`, alors aucune borne n'est signalée.
+- **Hypothèse de l'équipe couverte** : aucune — itération de stabilisation, pas de nouvelle hypothèse testée.
+- **Codage estimé** : 3 minutes.
+- **Fichiers prévus** : `frontend/src/app/layout.tsx` (titre/description/langue).
+- **Tests unitaires prévus** : aucun — aucune logique métier nouvelle, uniquement du balisage/métadonnées (exclu par la DoD).
+- **Étapes ajoutées à la démo** : aucune — le script existant couvre déjà l'écran stabilisé.
+- **Bilan** : _à remplir en fin d'itération (durée de codage réelle, dépassement éventuel, fait, reporté, modifications fichier par fichier)._
 
 ## À venir (ordre de priorité, à détailler au fil de l'eau)
 
