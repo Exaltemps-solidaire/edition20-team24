@@ -74,7 +74,13 @@ Si le temps restant venait à être prolongé, dis-le-moi : je redécoupe imméd
 - **Fichiers prévus** : `frontend/src/app/layout.tsx` (titre/description/langue).
 - **Tests unitaires prévus** : aucun — aucune logique métier nouvelle, uniquement du balisage/métadonnées (exclu par la DoD).
 - **Étapes ajoutées à la démo** : aucune — le script existant couvre déjà l'écran stabilisé.
-- **Bilan** : _à remplir en fin d'itération (durée de codage réelle, dépassement éventuel, fait, reporté, modifications fichier par fichier)._
+- **Bilan** :
+  - Durée de codage réelle : <1 minute (budget de 10 minutes respecté, aucun dépassement).
+  - Critères d'acceptation : les trois satisfaits (titre « Calendrier des sessions — La Cloche » vérifié par `curl localhost:8080/`, états chargement/erreur/liste déjà couverts depuis l'itération 1 — pas de régression au build/lint/test, `./scripts/verifier-deployabilite.sh` : aucune borne).
+  - Rien de reporté par rapport au périmètre de cette itération (volontairement vide de fonctionnalité).
+  - Le harnais n'a rien bloqué : `npm test` passe (5 tests, inchangés), `signaler-version.sh 2` accepté (`moteur_avance: false`).
+  - **Modifications** :
+    - `frontend/src/app/layout.tsx` : titre/description remplacés (valeurs par défaut du gabarit Next.js → nom de l'application), `lang="en"` → `lang="fr"` — sert le critère du titre d'onglet.
 
 ## À venir (ordre de priorité, à détailler au fil de l'eau)
 
