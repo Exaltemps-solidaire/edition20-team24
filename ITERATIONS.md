@@ -104,7 +104,16 @@ Si le temps restant venait à être prolongé, dis-le-moi : je redécoupe imméd
 - **Fichiers prévus** : `api/src/routes.ts`, `api/src/routes.test.ts`, `frontend/src/app/page.tsx`.
 - **Tests unitaires prévus** : 1 à 3, mise à jour de `calculerBadge`/`effectifRequis` pour des listes de noms au lieu de compteurs, cas complet/incomplet inchangés.
 - **Étapes ajoutées à la démo** : vérifier que les noms assignés apparaissent sous au moins une session.
-- **Bilan** : _à remplir en fin d'itération (durée de codage réelle, dépassement éventuel, fait, reporté, modifications fichier par fichier)._
+- **Bilan** :
+  - Durée de codage réelle : <1 minute (budget de 10 minutes respecté, aucun dépassement).
+  - Critères d'acceptation : les trois satisfaits (noms affichés sous le badge pour chaque session, vérifiés via `curl localhost:8081/api/v1/sessions` et sur l'écran 8080 ; règle de badge inchangée et retestée ; `npm test` et `verifier-deployabilite.sh` passent sans régression).
+  - Rien de reporté par rapport au périmètre de cette itération (sélection/modification de l'équipe reste hors périmètre, en tête de « À venir »).
+  - Le harnais n'a rien bloqué : `npm test` passe (5 tests mis à jour), `signaler-version.sh 3` accepté du premier coup (`moteur_avance: false`).
+  - **Modifications** :
+    - `api/src/routes.ts` : `Session` passe de compteurs (`salariesAssignes`/`benevolesAssignes`) à des listes de noms (`salaries`/`benevoles`) ; `calculerBadge` compare désormais des longueurs de liste — même règle métier, source de vérité unique — critère 1 et 2.
+    - `api/src/routes.test.ts` : tests adaptés aux listes de noms, mêmes cas complet/incomplet — critère 2.
+    - `frontend/src/app/page.tsx` : affichage en lecture seule des salarié·es/bénévoles assigné·es sous chaque badge (`data-testid="equipe-assignee"`) — critère 1.
+    - `e2e/demo.spec.ts` : étape « Je vois qui anime déjà chaque session » ajoutée à la démo.
 
 ## À venir (ordre de priorité, à détailler au fil de l'eau)
 
