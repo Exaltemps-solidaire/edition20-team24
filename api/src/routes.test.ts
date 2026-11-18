@@ -27,23 +27,21 @@ describe("calculerBadge", () => {
     module: "Module test",
     date: "2026-12-01",
     type: "journee",
-    salaries: [],
-    benevoles: [],
+    salariesAssignes: 0,
+    benevolesAssignes: 0,
   };
 
   it("une journée entière exige 2 salarié·es + 1 bénévole", () => {
-    expect(calculerBadge({ ...base, salaries: ["Camille"], benevoles: ["Hugo"] })).toBe("incomplete");
-    expect(calculerBadge({ ...base, salaries: ["Camille", "Nadia"], benevoles: ["Hugo"] })).toBe(
-      "complete",
-    );
+    expect(calculerBadge({ ...base, salariesAssignes: 1, benevolesAssignes: 1 })).toBe("incomplete");
+    expect(calculerBadge({ ...base, salariesAssignes: 2, benevolesAssignes: 1 })).toBe("complete");
   });
 
   it("une demi-journée exige 1 salarié·e + 1 bénévole", () => {
     const demiJournee: Session = { ...base, type: "demi-journee" };
-    expect(calculerBadge({ ...demiJournee, salaries: ["Camille"], benevoles: [] })).toBe(
+    expect(calculerBadge({ ...demiJournee, salariesAssignes: 1, benevolesAssignes: 0 })).toBe(
       "incomplete",
     );
-    expect(calculerBadge({ ...demiJournee, salaries: ["Camille"], benevoles: ["Hugo"] })).toBe(
+    expect(calculerBadge({ ...demiJournee, salariesAssignes: 1, benevolesAssignes: 1 })).toBe(
       "complete",
     );
   });

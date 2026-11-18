@@ -40,23 +40,18 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <h1 className={styles.titre}>Calendrier des sessions</h1>
+        <h1>Calendrier des sessions</h1>
         {etat.statut === "chargement" && <p>Chargement des sessions…</p>}
         {etat.statut === "erreur" && (
           <p>Impossible de charger les sessions pour le moment.</p>
         )}
         {etat.statut === "pret" && (
-          <ul className={styles.liste}>
+          <ul>
             {etat.sessions.map((session) => (
-              <li key={session.id} className={styles.session}>
+              <li key={session.id}>
                 <strong>{session.module}</strong> — {session.date} (
-                {session.type === "journee" ? "journée entière" : "demi-journée"})
-                <span
-                  data-testid="badge"
-                  className={`${styles.badge} ${
-                    session.badge === "complete" ? styles.badgeComplete : styles.badgeIncomplete
-                  }`}
-                >
+                {session.type === "journee" ? "journée entière" : "demi-journée"}) —{" "}
+                <span data-testid="badge">
                   {session.badge === "complete" ? "équipe complète" : "équipe incomplète"}
                 </span>
               </li>
